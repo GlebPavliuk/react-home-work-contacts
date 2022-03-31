@@ -1,0 +1,18 @@
+label {
+    font-weight: 500;
+    padding: 3px 0;
+}
+
+.buttons {
+    width: 100%;
+    padding-top: 3px;
+}
+
+.buttons button {
+    width: 50%;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+}

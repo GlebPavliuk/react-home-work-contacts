@@ -1,126 +1,87 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import * as contactsService from "../../services/contactsService";
 import ContactForm from "../contactForm/ContactForm";
 import ContactsList from "../contactsList/ContactsList";
 import "./Contacts.css";
 
-class Contacts extends Component {
-  state = {
-    selectedContact: this.getEmptyContact(),
-    contacts: [],
-    page: "list",
-  };
-  constructor(props) {
-    super(props);
-    this.onAddNewBtnClick = this.onAddNewBtnClick.bind(this);
-    this.onCancel = this.onCancel.bind(this);
-    this.onContactSelect = this.onContactSelect.bind(this);
-    this.onContactDelete = this.onContactDelete.bind(this);
-    this.onSave = this.onSave.bind(this);
-    this.createContact = this.createContact.bind(this);
-    this.updateContact = this.updateContact.bind(this);
-  }
+const emptyContent = {
+  name: "",
+  surname: "",
+  phone: "",
+};
 
-  componentDidMount() {
+const Contacts = (props) => {
+  const [selectedContact, setSelectedContact] = useState(emptyContent);
+  const [contacts, setContacts] = useState([]);
+  const [page, setPage] = useState("list");
+
+  useEffect(() => {
     contactsService.getContactsList().then((data) => {
-      this.setState({ contacts: data });
+      setContacts(data);
     });
-  }
+  }, []);
 
-  getEmptyContact() {
-    return {
-      name: "",
-      surname: "",
-      phone: "",
-    };
-  }
-
-  onAddNewBtnClick = () => {
-    this.setState({
-      selectedContact: this.getEmptyContact(),
-      page: "form",
-    });
+  const onAddNewBtnClick = () => {
+    setSelectedContact(emptyContent);
+    setPage("form");
   };
 
-  onCancel = () => {
-    this.setState({
-      page: "list",
-    });
+  const onCancel = () => {
+    setPage("list");
   };
 
-  onContactSelect(contact) {
-    this.setState({
-      selectedContact: contact,
-      page: "form",
-    });
-  }
+  const onContactSelect = (contact) => {
+    setSelectedContact(contact);
+    setPage("form");
+  };
 
-  onContactDelete(contact) {
-    const contacts = this.state.contacts.filter((el) => el !== contact);
+  const onContactDelete = (contact) => {
+    const myContacts = contacts.filter((el) => el !== contact);
     contactsService.deleteContact(contact.id);
-    this.setState({
-      contacts,
-      selectedContact: this.getEmptyContact(),
-    });
-  }
+    setContacts(myContacts);
+    setSelectedContact(emptyContent);
+  };
 
-  onSave(contact) {
+  const onSave = (contact) => {
     if (contact.id) {
-      this.updateContact(contact);
+      updateContact(contact);
     } else {
-      this.createContact(contact);
+      createContact(contact);
     }
-    this.setState({
-      page: "list",
-    });
-  }
+    setPage("list");
+  };
 
-  createContact(contact) {
+  const createContact = (contact) => {
     contactsService.createContact(contact).then((data) => {
-      const contacts = [...this.state.contacts, data];
-      this.setState({
-        contacts,
-        selectedContact: data,
-      });
+      const myContacts = [...contacts, data];
+      setContacts(myContacts);
+      setSelectedContact(data);
     });
-  }
+  };
 
-  updateContact(contact) {
+  const updateContact = (contact) => {
     contactsService.updateContact(contact).then((data) => {
-      const contacts = this.state.contacts.map((el) => (el.id === contact.id ? contact : el));
-      this.setState({
-        page: "list",
-        contacts,
-        selectedContact: contact,
-      });
+      const myContacts = contacts.map((el) => (el.id === contact.id ? contact : el));
+      setPage("list");
+      setContacts(myContacts);
+      setSelectedContact(contact);
     });
-  }
+  };
 
-  render() {
-    return (
-      <div className="container">
-        {this.state.page === "list" ? (
-          <>
-            <ContactsList
-              contacts={this.state.contacts}
-              onSelect={this.onContactSelect}
-              onDelete={this.onContactDelete}
-            />
-            <button onClick={this.onAddNewBtnClick} className="add-new-contact-btn">
-              Add new
-            </button>
-          </>
-        ) : (
-          <ContactForm
-            contact={this.state.selectedContact}
-            onCancel={this.onCancel}
-            onSave={this.onSave}
-            onEdit={this.updateContact}
-          />
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div className="container">
+      {page === "list" ? (
+        <>
+          <ContactsList contacts={contacts} onSelect={onContactSelect} onDelete={onContactDelete} />
+          <button onClick={onAddNewBtnClick} className="add-new-contact-btn">
+            Add new
+          </button>
+        </>
+      ) : (
+        <ContactForm contact={selectedContact} onCancel={onCancel} onSave={onSave} onEdit={updateContact} />
+      )}
+    </div>
+  );
+};
 
 export default Contacts;

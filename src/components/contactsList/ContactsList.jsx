@@ -1,22 +1,15 @@
-import React, { Component } from "react";
+import React from "react";
 import ContactsListItem from "../contactsListItem/ContactsListItem";
 import "./ContactsList.css";
 
-class ContactsList extends Component {
-  render() {
-    return (
-      <ul className="contact-list">
-        {this.props.contacts.map((contact) => (
-          <ContactsListItem
-            key={contact.id}
-            contact={contact}
-            onSelect={this.props.onSelect}
-            onDelete={this.props.onDelete}
-          />
-        ))}
-      </ul>
-    );
-  }
-}
+const ContactsList = (props) => {
+  return (
+    <ul className="contact-list">
+      {props.contacts.map((contact) => (
+        <ContactsListItem key={contact.id} contact={contact} onSelect={props.onSelect} onDelete={props.onDelete} />
+      ))}
+    </ul>
+  );
+};
 
 export default ContactsList;

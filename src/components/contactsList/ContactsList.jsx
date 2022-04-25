@@ -1,6 +1,7 @@
 import React from "react";
 import ContactsListItem from "../contactsListItem/ContactsListItem";
 import "./ContactsList.css";
+import "../../../src/App.css";
 
 const ContactsList = (props) => {
   return (

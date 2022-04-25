@@ -17,7 +17,7 @@ const Contacts = (props) => {
 
   useEffect(() => {
     contactsService.getContactsList().then((data) => {
-      setContacts(data);
+      setContacts(data.data);
     });
   }, []);
 
@@ -53,9 +53,9 @@ const Contacts = (props) => {
 
   const createContact = (contact) => {
     contactsService.createContact(contact).then((data) => {
-      const myContacts = [...contacts, data];
+      const myContacts = [...contacts, data.data];
       setContacts(myContacts);
-      setSelectedContact(data);
+      setSelectedContact(data.data);
     });
   };
 
